@@ -27,11 +27,6 @@ const Benefits: React.FC = () => {
       description: "Get your parcels delivered within hours, not days. We operate 7 days a week across the GTA."
     },
     {
-      icon: <Map size={28} />,
-      title: "Real-Time Tracking",
-      description: "Know exactly where your package is with our advanced GPS tracking system and status updates."
-    },
-    {
       icon: <Package size={28} />,
       title: "Safe Handling",
       description: "Your items are treated with care. We specialize in fragile, time-sensitive, and valuable deliveries."
@@ -55,7 +50,7 @@ const Benefits: React.FC = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {benefits.map((benefit, index) => (
             <BenefitCard
               key={index}

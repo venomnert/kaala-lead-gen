@@ -13,7 +13,6 @@ function App() {
       <Hero />
       <Benefits />
       <HowItWorks />
-      <Testimonials />
       <Footer />
     </div>
   );

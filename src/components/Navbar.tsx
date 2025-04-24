@@ -60,12 +60,6 @@ const Navbar: React.FC = () => {
             >
               How It Works
             </button>
-            <button 
-              onClick={() => scrollToSection('testimonials')} 
-              className="font-medium hover:text-blue-400 transition"
-            >
-              Testimonials
-            </button>
           </div>
           
           <div className="hidden md:block">

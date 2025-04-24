@@ -65,25 +65,11 @@ const LeadForm: React.FC = () => {
     <div className="bg-white rounded-xl p-6 md:p-8 shadow-xl animate-fade-in">
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-2xl font-bold text-gray-800">Get Your Free Quote</h3>
-          <div className="flex items-center gap-2 text-sm text-blue-600">
-            <Timer size={16} />
-            <span>Takes 60 seconds</span>
-          </div>
+          <h3 className="text-2xl font-bold text-gray-800">Be the first to know when we launch!</h3>
         </div>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex -space-x-2">
-            {[1, 2, 3].map((i) => (
-              <img
-                key={i}
-                src={`https://i.pravatar.cc/32?img=${i}`}
-                alt="Recent customer"
-                className="w-8 h-8 rounded-full border-2 border-white"
-              />
-            ))}
-          </div>
+        <div className="flex items-center mb-4">
           <p className="text-sm text-gray-600">
-            <span className="font-semibold">12 businesses</span> got quotes in the last hour
+            Enter your email below to join our early access list and get priority updates, exclusive offers.
           </p>
         </div>
       </div>
