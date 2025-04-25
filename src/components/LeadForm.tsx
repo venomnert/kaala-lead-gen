@@ -3,7 +3,7 @@ import { Check, Loader2, Lock, Timer } from 'lucide-react';
 
 const LeadForm: React.FC = () => {
   const [step, setStep] = useState(1);
-  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -27,7 +27,33 @@ const LeadForm: React.FC = () => {
     e.preventDefault();
     setFormState('submitting');
     
-    setTimeout(() => {
+    // Create form data to send
+    const formSubmitData = new FormData();
+    formSubmitData.append('email', formData.email);
+    formSubmitData.append('name', formData.name);
+    formSubmitData.append('phone', formData.phone);
+    formSubmitData.append('needs', formData.needs);
+    formSubmitData.append('_replyto', formData.email);
+    
+    // Add recipient email as a hidden field
+    formSubmitData.append('_to', 'venomnert1994@hotmail.com');
+    
+    // Send the form data using fetch API
+    fetch('https://formspree.io/f/FORM_ID', { // Replace FORM_ID with your Formspree form ID
+      method: 'POST',
+      body: formSubmitData,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error('Network response was not ok.');
+    })
+    .then(() => {
+      console.log('Form submitted successfully!');
       setFormState('success');
       setTimeout(() => {
         setFormState('idle');
@@ -39,7 +65,11 @@ const LeadForm: React.FC = () => {
           needs: '',
         });
       }, 3000);
-    }, 1500);
+    })
+    .catch((error: Error) => {
+      console.error('Error submitting form:', error);
+      setFormState('error');
+    });
   };
 
   if (formState === 'success') {
@@ -49,13 +79,27 @@ const LeadForm: React.FC = () => {
           <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
             <Check size={32} className="text-green-600" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">Your Free Quote is on the Way!</h3>
-          <p className="text-gray-600 mb-4">
-            We'll email your personalized quote within the next 30 minutes.
-          </p>
-          <p className="text-sm text-blue-600 font-medium">
-            Check your inbox for a special first-time customer discount!
-          </p>
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">Welcome! We'll Notify You When We Launch.</h3>
+        </div>
+      </div>
+    );
+  }
+
+  if (formState === 'error') {
+    return (
+      <div className="bg-white rounded-xl p-8 shadow-xl animate-fade-in">
+        <div className="text-center py-8">
+          <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <div className="text-red-600 text-2xl font-bold">!</div>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">Something went wrong</h3>
+          <p className="text-gray-600">Please try again later or contact support.</p>
+          <button 
+            onClick={() => setFormState('idle')}
+            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg transition duration-300"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -102,7 +146,7 @@ const LeadForm: React.FC = () => {
               onChange={handleChange}
               placeholder="Enter your work email"
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-600"
             />
           </div>
           
@@ -118,7 +162,7 @@ const LeadForm: React.FC = () => {
               onChange={handleChange}
               placeholder="Enter your name"
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-600"
             />
           </div>
 
@@ -148,7 +192,7 @@ const LeadForm: React.FC = () => {
               onChange={handleChange}
               placeholder="For delivery updates"
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-600"
             />
           </div>
           
@@ -163,7 +207,7 @@ const LeadForm: React.FC = () => {
               onChange={handleChange}
               placeholder="What would you like to ship?"
               rows={3}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-600"
             ></textarea>
           </div>
 
@@ -172,15 +216,7 @@ const LeadForm: React.FC = () => {
             <ul className="space-y-2">
               <li className="flex items-center gap-2 text-sm text-blue-800">
                 <Check size={16} className="text-blue-600" />
-                Personalized quote within 30 minutes
-              </li>
-              <li className="flex items-center gap-2 text-sm text-blue-800">
-                <Check size={16} className="text-blue-600" />
                 First-time customer discount code
-              </li>
-              <li className="flex items-center gap-2 text-sm text-blue-800">
-                <Check size={16} className="text-blue-600" />
-                Free delivery insurance up to $1000
               </li>
             </ul>
           </div>
@@ -188,7 +224,7 @@ const LeadForm: React.FC = () => {
           <button
             type="submit"
             disabled={formState === 'submitting'}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition duration-300 flex items-center justify-center"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition duration-300 flex items-center justify-center text-gray-600"
           >
             {formState === 'submitting' ? (
               <>
@@ -196,7 +232,7 @@ const LeadForm: React.FC = () => {
                 Processing...
               </>
             ) : (
-              'Get Your Free Quote Now'
+              'Sign Up for Early Updates'
             )}
           </button>
 
