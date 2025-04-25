@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Package size={28} className={isScrolled ? 'text-blue-600' : 'text-white'} />
-            <span className="font-bold text-xl">GTA Parcel</span>
+            <span className="font-bold text-xl">Kaala</span>
           </div>
           
           <div className="hidden md:flex space-x-8">
@@ -71,7 +71,7 @@ const Navbar: React.FC = () => {
                   : 'bg-white hover:bg-gray-100 text-blue-600'
               } font-medium px-5 py-2 rounded-lg transition duration-300`}
             >
-              Get a Quote
+              Join Now
             </button>
           </div>
           
