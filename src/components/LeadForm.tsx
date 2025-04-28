@@ -1,110 +1,21 @@
 import React, { useState } from 'react';
-import { Check, Loader2, Lock, Timer } from 'lucide-react';
+import { useForm, ValidationError } from '@formspree/react';
+import { Check, Loader2, Lock } from 'lucide-react';
 
 const LeadForm: React.FC = () => {
-  const [step, setStep] = useState(1);
-  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-  const [formData, setFormData] = useState({
-    email: '',
-    name: '',
-    phone: '',
-    needs: '',
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const nextStep = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStep(2);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormState('submitting');
-    
-    // Create form data to send
-    const formSubmitData = new FormData();
-    formSubmitData.append('email', formData.email);
-    formSubmitData.append('name', formData.name);
-    formSubmitData.append('phone', formData.phone);
-    formSubmitData.append('needs', formData.needs);
-    formSubmitData.append('_replyto', formData.email);
-    
-    // Add recipient email as a hidden field
-    formSubmitData.append('_to', 'venomnert1994@hotmail.com');
-    
-    // Send the form data using fetch API
-    fetch('https://formspree.io/f/FORM_ID', { // Replace FORM_ID with your Formspree form ID
-      method: 'POST',
-      body: formSubmitData,
-      headers: {
-        'Accept': 'application/json'
-      }
-    })
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error('Network response was not ok.');
-    })
-    .then(() => {
-      console.log('Form submitted successfully!');
-      setFormState('success');
-      setTimeout(() => {
-        setFormState('idle');
-        setStep(1);
-        setFormData({
-          email: '',
-          name: '',
-          phone: '',
-          needs: '',
-        });
-      }, 3000);
-    })
-    .catch((error: Error) => {
-      console.error('Error submitting form:', error);
-      setFormState('error');
-    });
-  };
-
-  if (formState === 'success') {
+  const [state, handleSubmit] = useForm("mdkgaodl");
+  if (state.succeeded) {
     return (
-      <div className="bg-white rounded-xl p-8 shadow-xl animate-fade-in">
+      <div className="bg-white rounded-xl p-6 md:p-8 shadow-xl animate-fade-in">
         <div className="text-center py-8">
           <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
             <Check size={32} className="text-green-600" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">Welcome! We'll Notify You When We Launch.</h3>
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">Thanks for joining!</h3>
         </div>
       </div>
     );
   }
-
-  if (formState === 'error') {
-    return (
-      <div className="bg-white rounded-xl p-8 shadow-xl animate-fade-in">
-        <div className="text-center py-8">
-          <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-            <div className="text-red-600 text-2xl font-bold">!</div>
-          </div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">Something went wrong</h3>
-          <p className="text-gray-600">Please try again later or contact support.</p>
-          <button 
-            onClick={() => setFormState('idle')}
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg transition duration-300"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white rounded-xl p-6 md:p-8 shadow-xl animate-fade-in">
       <div className="mb-6">
@@ -117,134 +28,59 @@ const LeadForm: React.FC = () => {
           </p>
         </div>
       </div>
-      
-      <div className="mb-6">
-        <div className="relative">
-          <div className="overflow-hidden h-1 flex rounded bg-gray-200">
-            <div
-              className="bg-blue-600 transition-all duration-300"
-              style={{ width: step === 1 ? '50%' : '100%' }}
-            />
-          </div>
-          <div className="absolute -top-6 right-0 text-sm text-gray-500">
-            Step {step} of 2
-          </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            Email Address
+          </label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            required
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-600"
+          />
+          <ValidationError
+            prefix="Email"
+            field="email"
+            errors={state.errors}
+          />
         </div>
-      </div>
-
-      {step === 1 ? (
-        <form onSubmit={nextStep} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your work email"
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-600"
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter your name"
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-600"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition duration-300 flex items-center justify-center"
-          >
-            Continue - It's Free
-          </button>
-
-          <div className="flex items-center gap-2 justify-center mt-4">
-            <Lock size={14} className="text-gray-400" />
-            <p className="text-sm text-gray-500">Your information is secure and encrypted</p>
-          </div>
-        </form>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="For delivery updates"
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-600"
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="needs" className="block text-sm font-medium text-gray-700 mb-1">
-              Delivery Needs
-            </label>
-            <textarea
-              id="needs"
-              name="needs"
-              value={formData.needs}
-              onChange={handleChange}
-              placeholder="What would you like to ship?"
-              rows={3}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-600"
-            ></textarea>
-          </div>
-
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-medium text-blue-900 mb-2">You'll receive:</h4>
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-sm text-blue-800">
-                <Check size={16} className="text-blue-600" />
-                First-time customer discount code
-              </li>
-            </ul>
-          </div>
-          
-          <button
-            type="submit"
-            disabled={formState === 'submitting'}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition duration-300 flex items-center justify-center text-gray-600"
-          >
-            {formState === 'submitting' ? (
-              <>
-                <Loader2 size={20} className="mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              'Sign Up for Early Updates'
-            )}
-          </button>
-
-          <div className="flex items-center gap-2 justify-center">
-            <Lock size={14} className="text-gray-400" />
-            <p className="text-xs text-gray-500">
-              We respect your privacy. Read our{' '}
-              <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a>
-            </p>
-          </div>
-        </form>
-      )}
+        <div>
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+            Message
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            rows={4}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-600"
+          />
+          <ValidationError
+            prefix="Message"
+            field="message"
+            errors={state.errors}
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={state.submitting}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition duration-300 flex items-center justify-center"
+        >
+          {state.submitting ? (
+            <>
+              <Loader2 size={20} className="mr-2 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            'Submit'
+          )}
+        </button>
+        <div className="flex items-center gap-2 justify-center mt-4">
+          <Lock size={14} className="text-gray-400" />
+          <p className="text-sm text-gray-500">Your information is secure and encrypted</p>
+        </div>
+      </form>
     </div>
   );
 };
